@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Feisal Adur</title>
+    <atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Sat, 31 Jan 2015 23:25:20 +0100</pubDate>
+    <lastBuildDate>Sat, 31 Jan 2015 23:25:20 +0100</lastBuildDate>
+    <generator>Jekyll v1.4.3</generator>
+    
+      <item>
+        <title>The beginning</title>
+        <description>&lt;p&gt;The this blog starts here. Supposedly the first entry. I&amp;#39;ve previously attempted to regularly blog. I usually fall off at post number three. This time however its going to different. Coming off a three week vacation, I decided to revive this space.&lt;/p&gt;
+
+&lt;p&gt;I am terrified of becoming the coder in a managerial position who only writes product specs and attends meetings. Needless to say that is what I&amp;#39;ve become as of late.&lt;/p&gt;
+
+&lt;p&gt;Am not big on insights and reflections, basically I need an excuse to start experimenting again. I promised myself to use my downtime in keeping this space fresh with my learnings. Hopefully I&amp;#39;ll keep it up.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://imgs.xkcd.com/comics/morse_code.png&quot; alt=&quot;image&quot;&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sat, 31 Jan 2015 21:00:00 +0100</pubDate>
+        <link>/2015/01/31/the-beginning/</link>
+        <guid isPermaLink="true">/2015/01/31/the-beginning/</guid>
+        
+        
+      </item>
+    
+  </channel>
+</rss>
