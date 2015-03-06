@@ -6,7 +6,7 @@ header-img: 'img/time.jpg'
 meta-description: 'Estimations and you'
 
 ---
-One of the most toxic things in a project is estimations. Yet it's most cast around notion that at any point during a projects lifespan, anyone is capable of estimating the amount of work left.
+One of the most toxic things in a project is estimations. Yet it's the most cast around notion that at any point during a projects lifespan, anyone is capable of estimating the amount of work left.
 
 Obviously time lines get thrown around and projections can be made. But then
 again, this isn't the statistical "bias of an estimator" equation we are
