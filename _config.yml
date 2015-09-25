@@ -5,6 +5,7 @@ timezone: Europe/Copenhagen
 permalink: pretty
 baseurl: ''
 paginate: 10
+domain: 'http://feisal.dk'
 github_username: fadur
 twitter_username: fadur
 instagram_username: fadur
