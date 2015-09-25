@@ -4,7 +4,6 @@ pygments: true
 timezone: Europe/Copenhagen
 permalink: pretty
 baseurl: ''
-domain: "http://feisal.dk"
 paginate: 10
 github_username: fadur
 twitter_username: fadur
