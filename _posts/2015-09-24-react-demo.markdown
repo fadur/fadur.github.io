@@ -16,7 +16,8 @@ ability to create an audit trail.
 I wanted to log each individual transaction made, all while giving the user
 options where they can justify their actions.
 
-<video width="720px" controls="controls" preload='auto'>
-<source src="https://s3-eu-west-1.amazonaws.com/ubuck-2/react-demo.mp4"  type='video/mp4' />
+<video width="720px" controls preload label='Tech-session - React Demo'>
+<source src="https://docyzggpewtrf.cloudfront.net/react-demo.mp4"
+    type='video/mp4' />
 </video>
 

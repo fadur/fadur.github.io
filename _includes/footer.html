@@ -69,4 +69,21 @@
 
 <!-- Custom Theme JavaScript -->
 <script src="{{ "/js/clean-blog.min.js " | prepend: site.baseurl }}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    var el = document.getElementsByTagName('video');
+    el[0].addEventListener('playing', function(){
+        var label = this.getAttribute('label')
+        ga('send', {
+            'hitType': 'event',          // Required.
+            'eventCategory': 'video',   // Required.
+            'eventAction': 'play',      // Required.
+            'eventLabel': label,
+            'eventValue': 1
+        });
+        console.log(label);
+   });
+    
+})
 
+</script>

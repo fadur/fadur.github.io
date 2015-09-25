@@ -38,19 +38,17 @@
 <!--analytics-->
 <script async src='//www.google-analytics.com/analytics.js'></script>
 <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-  
-  ga('create', 'UA-21100241-2', 'auto');
-  ga('send',
-    {
-        'hitType': 'pageview',
-        'page': '/2015/01/31/the-beginning/',
-        'title': window.title
-    }
-  );
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};
+    ga.l=+new Date;
+    ga('create', 'UA-21100241-2', 'auto');
+    ga('send',
+        {
+            'hitType': 'pageview',
+            'page': '/2015/01/31/the-beginning/',
+            'title': window.title
+        }
+    );
+
 </script>
 
 </head>
@@ -198,7 +196,24 @@
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/clean-blog.min.js "></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    var el = document.getElementsByTagName('video');
+    el[0].addEventListener('playing', function(){
+        var label = this.getAttribute('label')
+        ga('send', {
+            'hitType': 'event',          // Required.
+            'eventCategory': 'video',   // Required.
+            'eventAction': 'play',      // Required.
+            'eventLabel': label,
+            'eventValue': 1
+        });
+        console.log(label);
+   });
+    
+})
 
+</script>
 
 
 </body>
