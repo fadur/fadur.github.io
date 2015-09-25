@@ -1,9 +1,9 @@
 ---
 layout: post
-title: React Demo
+title: React 
 date: 24-09-2015 21:00
 meta-description: Video demo, showcasing React & Flux
-categories: demo
+categories: videos 
 
 ---
 The following presentation is a tech-session with my team, showcasing React.

@@ -4,6 +4,7 @@ pygments: true
 timezone: Europe/Copenhagen
 permalink: pretty
 baseurl: ''
+domain: "http://feisal.dk"
 paginate: 10
 github_username: fadur
 twitter_username: fadur
@@ -13,3 +14,4 @@ title: Feisal Adur
 header-img: 'img/home-bg.jpg'
 meta-description: Home of Feisal Adur a developer  
 page-subtitle: 
+
