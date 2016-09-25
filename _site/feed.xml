@@ -3,8 +3,8 @@
   <channel>
     <title>Feisal Adur</title>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 25 Sep 2016 21:12:34 +0200</pubDate>
-    <lastBuildDate>Sun, 25 Sep 2016 21:12:34 +0200</lastBuildDate>
+    <pubDate>Sun, 25 Sep 2016 21:19:33 +0200</pubDate>
+    <lastBuildDate>Sun, 25 Sep 2016 21:19:33 +0200</lastBuildDate>
     <generator>Jekyll v3.2.1</generator>
     
       <item>
@@ -39,12 +39,12 @@ Here is a command I use to find information on a volume.   &lt;/p&gt;
 &lt;p&gt;For example, optional environment variables that can be used to define another location, like a subdirectory for the database files. Which is perfect for our use case. So we&amp;#39;ll specify that as our amount point.&lt;/p&gt;
 
 &lt;p&gt;To create that data volume, you would write&lt;/p&gt;
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;docker create -v /var/lib/postgresql/data --name pg_data busybox /bin/true
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;docker create -v /var/lib/postgresql/data --name pgdata busybox /bin/true
 &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-&lt;p&gt;This specifies the mount destination for the volume, and we&amp;#39;ve named it pg&lt;em&gt;data for reference later on. You can find more details about the volume by typing `docker inspect pg&lt;/em&gt;data`.&lt;/p&gt;
+&lt;p&gt;This specifies the mount destination for the volume, and we&amp;#39;ve named it pgdata for reference later on. You can find more details about the volume by typing &lt;code&gt;docker inspect pgdata&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;So now when we launch a postgres container we tell docker to mount the volume from our pg_data container. We also have to tell postgres where we want out data. To launch such a container we would write.&lt;/p&gt;
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;docker run -d --volumes-from pg_data \
+&lt;p&gt;So now when we launch a postgres container we tell docker to mount the volume from our pgdata container. We also have to tell postgres where we want out data. To launch such a container we would write.&lt;/p&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;docker run -d --volumes-from pgdata \
  -e PGDATA=/var/lib/potgresql/data \
  -e POSTGRES_USER=my_user
  --name postgres postgres 
@@ -52,7 +52,7 @@ Here is a command I use to find information on a volume.   &lt;/p&gt;
 &lt;p&gt;To try it out, run &lt;code&gt;docker exec -it postgres bash&lt;/code&gt;. And once you are in you should be able to access your database as your user &lt;code&gt;psql -U my_user&lt;/code&gt;. 
 We can now create a test database and insert some test data.&lt;/p&gt;
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;create table testing (name varchar(50), age int);
-insert into testings (name, age) values ((&amp;#39;Bob&amp;#39;, 23), (&amp;#39;Mike&amp;#39;, 25));
+insert into testing (name, age) values ((&amp;#39;Bob&amp;#39;, 23), (&amp;#39;Mike&amp;#39;, 25));
 &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 &lt;p&gt;Now go ahead and log out, stop and remove that container. You should now be able to start an identical container and your data will still be available. &lt;/p&gt;
 
@@ -64,7 +64,7 @@ insert into testings (name, age) values ((&amp;#39;Bob&amp;#39;, 23), (&amp;#39;
 As an example you could create a network like this one:&lt;/p&gt;
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;docker network create simple_network
 &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-&lt;p&gt;This will create a network bridge that can be referenced as service_network. So all subsequent containers launched within this network need only reference each-others names. And docker will take care of the name resolving.&lt;br&gt;
+&lt;p&gt;This will create a network bridge that can be referenced by name. So all subsequent containers launched within this network need only reference each-others names. And docker will take care of the name resolving.&lt;br&gt;
 As an example the following command would start redis and expose the default port 6379.  &lt;/p&gt;
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;docker run --network simple_network --name my_redis -d redis
 &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;

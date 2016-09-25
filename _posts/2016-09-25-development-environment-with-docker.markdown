@@ -34,13 +34,13 @@ For example, optional environment variables that can be used to define another l
 
 To create that data volume, you would write
  	
- 	docker create -v /var/lib/postgresql/data --name pg_data busybox /bin/true
+    docker create -v /var/lib/postgresql/data --name pgdata busybox /bin/true
  
-This specifies the mount destination for the volume, and we've named it pg_data for reference later on. You can find more details about the volume by typing `docker inspect pg_data`.
+This specifies the mount destination for the volume, and we've named it pgdata for reference later on. You can find more details about the volume by typing `docker inspect pgdata`.
 
-So now when we launch a postgres container we tell docker to mount the volume from our pg_data container. We also have to tell postgres where we want out data. To launch such a container we would write.
+So now when we launch a postgres container we tell docker to mount the volume from our pgdata container. We also have to tell postgres where we want out data. To launch such a container we would write.
 
-	docker run -d --volumes-from pg_data \
+	docker run -d --volumes-from pgdata \
 	 -e PGDATA=/var/lib/potgresql/data \
 	 -e POSTGRES_USER=my_user
 	 --name postgres postgres 
@@ -49,7 +49,7 @@ To try it out, run `docker exec -it postgres bash`. And once you are in you shou
 We can now create a test database and insert some test data.
  	
 	create table testing (name varchar(50), age int);
-	insert into testings (name, age) values (('Bob', 23), ('Mike', 25));
+	insert into testing (name, age) values (('Bob', 23), ('Mike', 25));
 
 Now go ahead and log out, stop and remove that container. You should now be able to start an identical container and your data will still be available. 
 
@@ -61,7 +61,7 @@ As an example you could create a network like this one:
 
 	docker network create simple_network
 	
-This will create a network bridge that can be referenced as service_network. So all subsequent containers launched within this network need only reference each-others names. And docker will take care of the name resolving.   
+This will create a network bridge that can be referenced by name. So all subsequent containers launched within this network need only reference each-others names. And docker will take care of the name resolving.   
 As an example the following command would start redis and expose the default port 6379.  
 
 	docker run --network simple_network --name my_redis -d redis

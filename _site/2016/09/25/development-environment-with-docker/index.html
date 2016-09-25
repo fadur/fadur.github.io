@@ -136,12 +136,12 @@ Here is a command I use to find information on a volume.   </p>
 <p>For example, optional environment variables that can be used to define another location, like a subdirectory for the database files. Which is perfect for our use case. So we&#39;ll specify that as our amount point.</p>
 
 <p>To create that data volume, you would write</p>
-<figure class="highlight"><pre><code class="language-text" data-lang="text">docker create -v /var/lib/postgresql/data --name pg_data busybox /bin/true
+<figure class="highlight"><pre><code class="language-text" data-lang="text">docker create -v /var/lib/postgresql/data --name pgdata busybox /bin/true
 </code></pre></figure>
-<p>This specifies the mount destination for the volume, and we&#39;ve named it pg<em>data for reference later on. You can find more details about the volume by typing `docker inspect pg</em>data`.</p>
+<p>This specifies the mount destination for the volume, and we&#39;ve named it pgdata for reference later on. You can find more details about the volume by typing <code>docker inspect pgdata</code>.</p>
 
-<p>So now when we launch a postgres container we tell docker to mount the volume from our pg_data container. We also have to tell postgres where we want out data. To launch such a container we would write.</p>
-<figure class="highlight"><pre><code class="language-text" data-lang="text">docker run -d --volumes-from pg_data \
+<p>So now when we launch a postgres container we tell docker to mount the volume from our pgdata container. We also have to tell postgres where we want out data. To launch such a container we would write.</p>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">docker run -d --volumes-from pgdata \
  -e PGDATA=/var/lib/potgresql/data \
  -e POSTGRES_USER=my_user
  --name postgres postgres 
@@ -149,7 +149,7 @@ Here is a command I use to find information on a volume.   </p>
 <p>To try it out, run <code>docker exec -it postgres bash</code>. And once you are in you should be able to access your database as your user <code>psql -U my_user</code>. 
 We can now create a test database and insert some test data.</p>
 <figure class="highlight"><pre><code class="language-text" data-lang="text">create table testing (name varchar(50), age int);
-insert into testings (name, age) values ((&#39;Bob&#39;, 23), (&#39;Mike&#39;, 25));
+insert into testing (name, age) values ((&#39;Bob&#39;, 23), (&#39;Mike&#39;, 25));
 </code></pre></figure>
 <p>Now go ahead and log out, stop and remove that container. You should now be able to start an identical container and your data will still be available. </p>
 
@@ -161,7 +161,7 @@ insert into testings (name, age) values ((&#39;Bob&#39;, 23), (&#39;Mike&#39;, 2
 As an example you could create a network like this one:</p>
 <figure class="highlight"><pre><code class="language-text" data-lang="text">docker network create simple_network
 </code></pre></figure>
-<p>This will create a network bridge that can be referenced as service_network. So all subsequent containers launched within this network need only reference each-others names. And docker will take care of the name resolving.<br>
+<p>This will create a network bridge that can be referenced by name. So all subsequent containers launched within this network need only reference each-others names. And docker will take care of the name resolving.<br>
 As an example the following command would start redis and expose the default port 6379.  </p>
 <figure class="highlight"><pre><code class="language-text" data-lang="text">docker run --network simple_network --name my_redis -d redis
 </code></pre></figure>
