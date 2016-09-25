@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Feisal Adur">
+
+    
+    <meta name="description" content="Home of Feisal Adur a developer">
+
+    <title>Development environment with docker - Feisal Adur</title>
+
+    <link rel="canonical" href="/2016/09/25/development-environment-with-docker/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+<!--analytics-->
+<script async src='//www.google-analytics.com/analytics.js'></script>
+<script>
+    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};
+    ga.l=+new Date;
+    ga('create', 'UA-21100241-2', 'auto');
+    ga('send',
+        {
+            'hitType': 'pageview',
+            'page': '/2016/09/25/development-environment-with-docker/',
+            'title': window.title
+        }
+    );
+
+</script>
+
+</head>
+
+
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Feisal Adur</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>Development environment with docker</h1>
+                    
+                    <span class="meta">Posted by Feisal Adur on September 25, 2016</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+				<h1>Development environment with docker</h1>
+
+<p>For the last couple of months I&#39;ve switched to permanently using docker for development.
+Containers are awesome. In this post I&#39;ll try to address some of the main pain points I was faced with early on and how I&#39;ve managed to resolve them.</p>
+
+<h3>Persistence</h3>
+
+<p>The one thing that I&#39;ve found to be particularly painful has been persistence. I like the idea of stateless machines as much as the next guy. Nevertheless it&#39;s quite annoying whenever I&#39;ve had to restore from a postgres backup or re-running migrations again and again.</p>
+
+<p>There are two options work around this limitation.  </p>
+
+<ul>
+<li>Option 1: Forget about containerizing your database. Your database is not stateless. Run it on your host and connect to it as you would any other backing service. After all, this is what you would do in production, right? </li>
+<li>Option 2: Use an intermediary data-only container and back up that volume. You can move it around hosts or even share it with your colleagues.</li>
+</ul>
+
+<p>The later option is the one we&#39;ll be covering in this post. First off, a quick primer on docker volumes.<br>
+Docker volumes live beyond your containers lifecycle and thus available to the host, even after you&#39;ve stopped the container.
+This is a double edged sword, if you aren&#39;t careful, you&#39;ll from time to time find yourself running out of diskspace.
+I find it somewhat convenient as you could make changes outside of a running container. Though I would not recommend doing that, since any running container would be unaware of the changes and result in corrupted files.<br>
+Here is a command I use to find information on a volume.   </p>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">docker volume ls -q|head -n1| xargs docker volume inspect  
+</code></pre></figure>
+<p>This command will pick the first container and display its details, information like labels if any were applied, name and a mount point. On my host, the folder is located in <code>/var/lib/docker/volumes/{image-tag}/_data.</code></p>
+
+<p>We&#39;ll start off by creating a volume. For our specific use-case, I am using the official posgres image which can be found here <a href="https://hub.docker.com/_/postgres/">https://hub.docker.com/_/postgres/</a>. Further down, there are few options that we can override.   </p>
+
+<p>For example, optional environment variables that can be used to define another location, like a subdirectory for the database files. Which is perfect for our use case. So we&#39;ll specify that as our amount point.</p>
+
+<p>To create that data volume, you would write</p>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">docker create -v /var/lib/postgresql/data --name pg_data busybox /bin/true
+</code></pre></figure>
+<p>This specifies the mount destination for the volume, and we&#39;ve named it pg<em>data for reference later on. You can find more details about the volume by typing `docker inspect pg</em>data`.</p>
+
+<p>So now when we launch a postgres container we tell docker to mount the volume from our pg_data container. We also have to tell postgres where we want out data. To launch such a container we would write.</p>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">docker run -d --volumes-from pg_data \
+ -e PGDATA=/var/lib/potgresql/data \
+ -e POSTGRES_USER=my_user
+ --name postgres postgres 
+</code></pre></figure>
+<p>To try it out, run <code>docker exec -it postgres bash</code>. And once you are in you should be able to access your database as your user <code>psql -U my_user</code>. 
+We can now create a test database and insert some test data.</p>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">create table testing (name varchar(50), age int);
+insert into testings (name, age) values ((&#39;Bob&#39;, 23), (&#39;Mike&#39;, 25));
+</code></pre></figure>
+<p>Now go ahead and log out, stop and remove that container. You should now be able to start an identical container and your data will still be available. </p>
+
+<p>I&#39;ve found this to be convenient to my workflow. I always have a postgres container running in the background. Only as opposed to one installed on my host, this is a lightweight container perfectly suited for the kind of usage involved in development. This also allows me to evaluate the latest versions of postgres and give the new features a spin without the hassle of setting it up or worries of losing data.  </p>
+
+<h3>Networking</h3>
+
+<p>Another neat feature when using docker for development is the internal host resolving. It can sometimes get cumbersome connecting services across projects. What I do is create a network, and launch multiple services that need to communicate on the same network.<br>
+As an example you could create a network like this one:</p>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">docker network create simple_network
+</code></pre></figure>
+<p>This will create a network bridge that can be referenced as service_network. So all subsequent containers launched within this network need only reference each-others names. And docker will take care of the name resolving.<br>
+As an example the following command would start redis and expose the default port 6379.  </p>
+<figure class="highlight"><pre><code class="language-text" data-lang="text">docker run --network simple_network --name my_redis -d redis
+</code></pre></figure>
+<p>This means all containers launched within this network will be able to not only access this container, but simply reference it as <code>my_redis</code> and docker will take care of the internal resolving.<br>
+This is particularly useful when your projects all share the same kind of resources. i.e a database, cache, MQ etc. </p>
+
+<p>I&#39;ve become quite fond of using docker for development. Even managed to deploy a few services into production. And its definitely something I&#39;ll be using going forward.  </p>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/videos/2015/09/24/react-demo/" data-toggle="tooltip" data-placement="top" title="React">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<hr>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://twitter.com/fadur">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    
+                    <li>
+                        <a href="https://github.com/fadur">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li>
+                        <a href="https://instagram.com/fadur">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-instagram fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+
+                    
+                </ul>
+                <p class="copyright text-muted">Copyright &copy; Feisal Adur 2016</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    var el = document.getElementsByTagName('video');
+    el[0].addEventListener('playing', function(){
+        var label = this.getAttribute('label')
+        ga('send', {
+            'hitType': 'event',          // Required.
+            'eventCategory': 'video',   // Required.
+            'eventAction': 'play',      // Required.
+            'eventLabel': label,
+            'eventValue': 1
+        });
+   });
+    
+})
+
+</script>
+
+
+</body>
+
+</html>
